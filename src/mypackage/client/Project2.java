@@ -14,7 +14,7 @@ import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class Proj2a implements EntryPoint
+public class Project2 implements EntryPoint
 {
 	VerticalPanel mainPanel = new VerticalPanel();
 	String baseURL = "http://localhost:3000";
