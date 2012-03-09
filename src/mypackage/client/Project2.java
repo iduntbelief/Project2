@@ -12,15 +12,26 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class Project2 implements EntryPoint
+public class Project2 implements EntryPoint, ClickHandler
 {
 	VerticalPanel mainPanel = new VerticalPanel();
 	String baseURL = "http://localhost:3000";
 	ArrayList<MyStudent> students =
 		new ArrayList<MyStudent>();
 	JsArray<Student> jsonData;
+	Button addStudentButton = new Button("Add Student");
+	TextBox fnBox = new TextBox();
+	TextBox lnBox = new TextBox();
+	TextBox majBox = new TextBox();
 	
 	private static class MyStudent
 	{
@@ -39,10 +50,28 @@ public class Project2 implements EntryPoint
 	}
 	public void onModuleLoad()
 	{
-		String url = baseURL + "/students/index.json";
-		getRequest(url,"getStudents");
+		//String url = baseURL + "/students/index.json";
+		//getRequest(url,"getStudents");
+		addStudentButton.addClickHandler(this);
 		RootPanel.get().add(mainPanel);
+		setupAddStudent();
 	}
+	
+	public void onClick(ClickEvent e)
+	{
+		Object source = e.getSource();
+		if (source == addStudentButton) {
+			String url = baseURL + "/students/createStudent";
+			String postData = URL.encode("first_name") + "=" +
+				URL.encode(fnBox.getText().trim()) + "&" +
+				URL.encode("last_name") + "=" +
+				URL.encode(lnBox.getText().trim()) + "&" +
+				URL.encode("major") + "=" +
+				URL.encode(majBox.getText().trim());
+			postRequest(url,postData,"postStudent");
+		}
+	}
+	
 	public void getRequest(String url, final String getType) {
 		final RequestBuilder rb = new
 			RequestBuilder(RequestBuilder.GET,url);
@@ -67,6 +96,36 @@ public class Project2 implements EntryPoint
 			Window.alert(e.getMessage());
 		}
 	} // end getRequest()
+	public void postRequest(String url, String data,
+		final String postType)
+	{
+		final RequestBuilder rb = new
+				RequestBuilder(RequestBuilder.POST,url);
+		rb.setHeader("Content-type", "application/x-www.form-urlencoded");
+		try {
+			rb.sendRequest(data, new RequestCallback()
+			{
+				public void onError(final Request request,
+					final Throwable exception)
+				{
+					Window.alert(exception.getMessage());
+				}
+				public void onResponseReceived(final Request request,
+					final Response response)
+				{
+					if (postType.equals("postStudent")) {
+						mainPanel.clear();
+						String url = baseURL + "/students/index.json";
+						getRequest(url, "getStudents");
+					}
+				}
+			});
+		}
+		catch (Exception e) {
+			Window.alert(e.getMessage());
+		}
+	} // end postRequest()
+	
 	private void showStudents(String responseText)
 	{
 		jsonData = getData(responseText);
@@ -103,6 +162,27 @@ public class Project2 implements EntryPoint
 		table.setRowData(0,students);
 		mainPanel.add(table);
 	} // end showStudents()
+	private void setupAddStudent()
+	{
+		VerticalPanel addStudentPanel = new VerticalPanel();
+		Label fnLabel = new Label("First Name");
+		HorizontalPanel fnRow = new HorizontalPanel();
+		fnRow.add(fnLabel);
+		fnRow.add(fnBox);
+		addStudentPanel.add(fnRow);
+		Label lnLabel = new Label("Last Name");
+		HorizontalPanel lnRow = new HorizontalPanel();
+		lnRow.add(lnLabel);
+		lnRow.add(lnBox);
+		addStudentPanel.add(lnRow);
+		Label majLabel = new Label("Major");
+		HorizontalPanel majRow = new HorizontalPanel();
+		majRow.add(majLabel);
+		majRow.add(majBox);
+		addStudentPanel.add(majRow);
+		addStudentPanel.add(addStudentButton);
+		mainPanel.add(addStudentPanel);
+	}	
 	private JsArray<Student> getData(String json)
 	{
 		return JsonUtils.safeEval(json);
