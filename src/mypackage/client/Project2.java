@@ -65,12 +65,11 @@ public class Project2 implements EntryPoint, ClickHandler
 		if (source == addStudentButton) {
 			String url = baseURL + "/students/createStudent";
 			String postData = URL.encode("first_name") + "=" +
-				URL.encode(fnBox.getText().trim());
-			//+ "&" +
-			//	URL.encode("last_name") + "=" +
-			//	URL.encode(lnBox.getText().trim()) + "&" +
-			//	URL.encode("major") + "=" +
-			//	URL.encode(majBox.getText().trim());
+				URL.encode(fnBox.getText().trim()) + "&" +
+				URL.encode("last_name") + "=" +
+				URL.encode(lnBox.getText().trim()) + "&" +
+				URL.encode("major") + "=" +
+				URL.encode(majBox.getText().trim());
 			fnBox.setText("");
 			lnBox.setText("");
 			majBox.setText("");			
@@ -109,7 +108,7 @@ public class Project2 implements EntryPoint, ClickHandler
 	{
 		final RequestBuilder rb = new
 				RequestBuilder(RequestBuilder.POST,url);
-		rb.setHeader("Content-type", "application/x-www.form-urlencoded");
+		rb.setHeader("Content-type", "application/x-www-form-urlencoded");
 		try {
 			rb.sendRequest(data, new RequestCallback()
 			{
