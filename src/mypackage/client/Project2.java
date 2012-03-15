@@ -34,6 +34,7 @@ public class Project2 implements EntryPoint, ClickHandler
 	Button editButton = new Button("Edit");
 	MyStudent selectedStudent = null;
 	Button addStudentButton = new Button("Add Student");
+	Button editStudentButton = new Button("Edit Student");
 	TextBox fnBox = new TextBox();
 	TextBox lnBox = new TextBox();
 	TextBox majBox = new TextBox();
@@ -61,6 +62,7 @@ public class Project2 implements EntryPoint, ClickHandler
 		deleteButton.addClickHandler(this);
 		editButton.addClickHandler(this);
 		addStudentButton.addClickHandler(this);
+		editStudentButton.addClickHandler(this);
 		RootPanel.get().add(mainPanel);
 		//setupAddStudent();
 	}	
@@ -89,7 +91,7 @@ public class Project2 implements EntryPoint, ClickHandler
 					URL.encode("" + selectedStudent.id);
 			postRequest(url,postData,"deleteStudent");
 		}
-		else if (source == editButton) {
+		else if (source == editStudentButton) {
 				String url = baseURL + "/students/editStudent";
 				String postData = URL.encode("student_id") + "=" + 
 					URL.encode("" + selectedStudent.id) + "&" +
@@ -103,6 +105,9 @@ public class Project2 implements EntryPoint, ClickHandler
 				lnBox.setText("");
 				majBox.setText("");
 				postRequest(url,postData,"editStudent");
+		}
+		else if (source == editButton) {
+			setupEditStudent();
 		}
 	}
 	public void getRequest(String url, final String getType) {
@@ -147,7 +152,8 @@ public class Project2 implements EntryPoint, ClickHandler
 					final Response response)
 				{
 					if (postType.equals("postStudent") ||
-							postType.equals("deleteStudent")) {
+						postType.equals("deleteStudent") ||
+							postType.equals("editStudent")) {
 						mainPanel.clear();
 						String url = baseURL + "/students/index.json";
 						getRequest(url, "getStudents");
@@ -237,6 +243,28 @@ public class Project2 implements EntryPoint, ClickHandler
 		addStudentPanel.add(majRow);
 		addStudentPanel.add(addStudentButton);
 		mainPanel.add(addStudentPanel);
+	}	
+	private void setupEditStudent()
+	{
+		mainPanel.clear();
+		VerticalPanel editStudentPanel = new VerticalPanel();
+		Label fnLabel = new Label("First Name");
+		HorizontalPanel fnRow = new HorizontalPanel();
+		fnRow.add(fnLabel);
+		fnRow.add(fnBox);
+		editStudentPanel.add(fnRow);
+		Label lnLabel = new Label("Last Name");
+		HorizontalPanel lnRow = new HorizontalPanel();
+		lnRow.add(lnLabel);
+		lnRow.add(lnBox);
+		editStudentPanel.add(lnRow);
+		Label majLabel = new Label("Major");
+		HorizontalPanel majRow = new HorizontalPanel();
+		majRow.add(majLabel);
+		majRow.add(majBox);
+		editStudentPanel.add(majRow);
+		editStudentPanel.add(editStudentButton);
+		mainPanel.add(editStudentPanel);
 	}	
 	private JsArray<Student> getData(String json)
 	{
