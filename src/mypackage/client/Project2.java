@@ -31,8 +31,8 @@ public class Project2 implements EntryPoint, ClickHandler
 	JsArray<Student> jsonData;
 	Button addButton = new Button("Add");
 	Button deleteButton = new Button("Delete");
-	MyStudent selectedStudent = null;
 	Button editButton = new Button("Edit");
+	MyStudent selectedStudent = null;
 	Button addStudentButton = new Button("Add Student");
 	TextBox fnBox = new TextBox();
 	TextBox lnBox = new TextBox();
@@ -59,6 +59,7 @@ public class Project2 implements EntryPoint, ClickHandler
 		getRequest(url,"getStudents");
 		addButton.addClickHandler(this);
 		deleteButton.addClickHandler(this);
+		editButton.addClickHandler(this);
 		addStudentButton.addClickHandler(this);
 		RootPanel.get().add(mainPanel);
 		//setupAddStudent();
@@ -82,11 +83,26 @@ public class Project2 implements EntryPoint, ClickHandler
 		else if (source == addButton) {
 			setupAddStudent();
 		}
-	else if (source == deleteButton) {
-		String url = baseURL + "/students/deleteStudent";
-		String postData = URL.encode("student_id") + "=" +
-				URL.encode("" + selectedStudent.id);
-		postRequest(url,postData,"deleteStudent");
+		else if (source == deleteButton) {
+			String url = baseURL + "/students/deleteStudent";
+			String postData = URL.encode("student_id") + "=" +
+					URL.encode("" + selectedStudent.id);
+			postRequest(url,postData,"deleteStudent");
+		}
+		else if (source == editButton) {
+				String url = baseURL + "/students/editStudent";
+				String postData = URL.encode("student_id") + "=" + 
+					URL.encode("" + selectedStudent.id) + "&" +
+					URL.encode("first_name") + "=" + 
+				    URL.encode(fnBox.getText().trim()) + "&" +
+				    URL.encode("last_name") + "=" + 
+				    URL.encode(lnBox.getText().trim()) + "&" +
+				    URL.encode("major") + "=" +
+				    URL.encode(majBox.getText().trim());
+				fnBox.setText("");
+				lnBox.setText("");
+				majBox.setText("");
+				postRequest(url,postData,"editStudent");
 		}
 	}
 	public void getRequest(String url, final String getType) {
@@ -196,6 +212,7 @@ public class Project2 implements EntryPoint, ClickHandler
 		HorizontalPanel buttonRow = new HorizontalPanel();
 		buttonRow.add(addButton);
 		buttonRow.add(deleteButton);
+		buttonRow.add(editButton);
 		mainPanel.add(buttonRow);
 		mainPanel.add(table);
 	} // end showStudents()
