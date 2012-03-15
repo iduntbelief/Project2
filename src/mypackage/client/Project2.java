@@ -30,6 +30,9 @@ public class Project2 implements EntryPoint, ClickHandler
 	ArrayList<MyStudent> students;
 	JsArray<Student> jsonData;
 	Button addButton = new Button("Add");
+	Button deleteButton = new Button("Delete");
+	MyStudent selectedStudent = null;
+	Button editButton = new Button("Edit");
 	Button addStudentButton = new Button("Add Student");
 	TextBox fnBox = new TextBox();
 	TextBox lnBox = new TextBox();
@@ -55,6 +58,7 @@ public class Project2 implements EntryPoint, ClickHandler
 		String url = baseURL + "/students/index.json";
 		getRequest(url,"getStudents");
 		addButton.addClickHandler(this);
+		deleteButton.addClickHandler(this);
 		addStudentButton.addClickHandler(this);
 		RootPanel.get().add(mainPanel);
 		//setupAddStudent();
@@ -78,7 +82,13 @@ public class Project2 implements EntryPoint, ClickHandler
 		else if (source == addButton) {
 			setupAddStudent();
 		}
-	}	
+	else if (source == deleteButton) {
+		String url = baseURL + "/students/deleteStudent";
+		String postData = URL.encode("student_id") + "=" +
+				URL.encode("" + selectedStudent.id);
+		postRequest(url,postData,"deleteStudent");
+		}
+	}
 	public void getRequest(String url, final String getType) {
 		final RequestBuilder rb = new
 			RequestBuilder(RequestBuilder.GET,url);
@@ -120,7 +130,8 @@ public class Project2 implements EntryPoint, ClickHandler
 				public void onResponseReceived(final Request request,
 					final Response response)
 				{
-					if (postType.equals("postStudent")) {
+					if (postType.equals("postStudent") ||
+							postType.equals("deleteStudent")) {
 						mainPanel.clear();
 						String url = baseURL + "/students/index.json";
 						getRequest(url, "getStudents");
@@ -174,7 +185,7 @@ public class Project2 implements EntryPoint, ClickHandler
 				{
 					MyStudent selected = selectionModel.getSelectedObject();
 					if (selected != null) {
-						Window.alert("id: " + selected.id);
+						selectedStudent = selected;
 					}
 				}
 			});
@@ -182,7 +193,10 @@ public class Project2 implements EntryPoint, ClickHandler
 		table.addColumn(lnameCol, "Last Name");
 		table.setRowCount(students.size(),true);
 		table.setRowData(0,students);
-		mainPanel.add(addButton);
+		HorizontalPanel buttonRow = new HorizontalPanel();
+		buttonRow.add(addButton);
+		buttonRow.add(deleteButton);
+		mainPanel.add(buttonRow);
 		mainPanel.add(table);
 	} // end showStudents()
 	private void setupAddStudent()
